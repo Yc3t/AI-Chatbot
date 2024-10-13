@@ -9,25 +9,40 @@ const ContextProvider = (props) => {
   const [showResult, setShowResult] = useState(false)
   const [loading, setLoading] = useState(false)
   const [resultData, setResultData] = useState("")
-  const [prevPrompts,setPrevPrompts] = useState([])
+  const [prevPrompts, setPrevPrompts] = useState([])
 
   const delayPara = (index, nextWord) => {
     setTimeout(function() {
       setResultData(prev => [...prev, nextWord])
     }, 75 * index);
+                  <h1></h1>
   }
 
-  const onSent = async () => {
+  const newChat = () =>{
+    setLoading(false)
+    setShowResult(false)
+
+  }
+
+  const onSent = async (prompt) => {
     setResultData([])
     setLoading(true)
     setShowResult(true)
-    setRecentPrompt(input)
-    setPrevPrompts(prev => [...prev,input])
-    const response = await run(input)
+    let response
+    if (prompt !== undefined) {
 
-    // Parse the response and convert to React elements
+      response = await run(prompt);
+      setRecentPrompt(prompt)
+     
+    }
+    else{
+      setPrevPrompts(prev =>[...prev,input])
+      setRecentPrompt(input)
+      response = await run(input)
+    }
+        // Parse the response and convert to React elements
     let parsedResponse = parseResponse(response);
-    
+
     // Animate the appearance of each element
     parsedResponse.forEach((element, index) => {
       delayPara(index, element);
@@ -39,7 +54,7 @@ const ContextProvider = (props) => {
 
   const parseResponse = (text) => {
     const lines = text.split('\n');
-    let inList = false;
+   let inList = false;
     return lines.reduce((acc, line, index) => {
       if (line.trim() === '') {
         // Empty line, end any ongoing list
@@ -90,7 +105,8 @@ const ContextProvider = (props) => {
     input,
     setInput,
     prevPrompts,
-    setPrevPrompts
+    setPrevPrompts,
+    newChat
   }
 
   return (
